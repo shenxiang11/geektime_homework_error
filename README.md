@@ -43,3 +43,26 @@ Response: {"code":1,"data":null,"message":"找不到id为100的todo"}
 如果返回前端 200 的状态，但是 data 却是 null (即 todo)，前端会有二义性，这条 todo 是"空" 的 或者 没有这条 todo，此时需要双方提前约定，才能消除这种二义性，如果人员变动大的工作环境，返回200，把错误"吞掉"，我认为不合适。
 
 而且如果做了监控，我们感知这种 404 错误，可以作出及时的处理。
+
+---
+
+这次遇到的其他问题
+
+我用 go 启动 docker 的mysql，然后做连接，不 sleep 一会，会建不了表？
+老师有什么优雅的方式解决这个问题吗？
+
+前面一开始我用 gorm 试了一下，连接 db 前都得 sleep 一会
+
+err 是
+```
+panic: dial tcp 127.0.0.1:33061: connect: connection refused
+```
+
+```go
+initialize.InitDB()
+xxxx
+time.Sleep(10 * time.Second) // 如果建表实际失败了，请适当延长时间
+global.DB.Exec("CREATE TABLE `todos` (`id` int(10) unsigned NOT NULL AUTO_INCREMENT, `content` varchar(255) NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
+global.DB.Exec("INSERT INTO todos (content) VALUES ('完成毛老师的作业');")
+fmt.Println("Todos 表新建完成")
+```
